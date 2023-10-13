@@ -64,6 +64,7 @@ void cut_voxel(unordered_map<VOXEL_LOC, OCTO_TREE*>& feature_map,
 
 int main(int argc, char** argv)
 {
+  std::cout<<"pose_refine start"<<std::endl;
   ros::init(argc, argv, "pose_refine");
   ros::NodeHandle nh("~");
 
@@ -85,11 +86,18 @@ int main(int argc, char** argv)
 
   sensor_msgs::PointCloud2 debugMsg, colorCloudMsg;
   vector<mypcl::pose> pose_vec;
+  ROS_INFO("loading pose ...");
   if(load_original)
+  {
+    ROS_INFO("file path: %s", (data_path + "original_pose/" + to_string(base_lidar) + ".json").c_str()  );
     pose_vec = mypcl::read_pose(data_path + "original_pose/" + to_string(base_lidar) + ".json");
+  } 
   else
     pose_vec = mypcl::read_pose(data_path + "pose.json");
+  
+  
   size_t pose_size = pose_vec.size();
+  std::cout<<"load pose done "<<pose_size<<std::endl;
   ros::Time t_begin, t_end, cur_t;
   double avg_time = 0.0;
 
@@ -104,6 +112,7 @@ int main(int argc, char** argv)
   {
     pcl::PointCloud<PointType>::Ptr pc(new pcl::PointCloud<PointType>);
     pcl::io::loadPCDFile(data_path+to_string(base_lidar)+"/"+to_string(i)+".pcd", *pc);
+    std::cout<<"load pcd "<<i<<" "<<data_path+to_string(base_lidar)+"/"+to_string(i)+".pcd"<<std::endl;
     base_pc[i] = pc;
   }
   
